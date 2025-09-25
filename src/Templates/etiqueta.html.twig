@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Konva Test</title>
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+        }
+    </style>
+    <script src="https://unpkg.com/konva@10/konva.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+    <div id='container'></div>
+    <script>
+        const data = {{ data|raw }}
+        const json = {{ template|raw }};
+
+        const loadKonva = () => {
+            const stage = Konva.Node.create(json, 'container');
+
+            const textsFields = stage.find('.text');
+            const barcodesFields = stage.find('.barcode');
+
+            textsFields?.forEach(textField => {
+                applyDataInTextField(textField)
+            })
+
+
+            barcodesFields.forEach(barcodeField => {
+                applyDataInBarField(barcodeField)
+            })
+        }
+
+        const applyDataInTextField = (text) => {
+            Object.keys(data).forEach(key => {
+                text.text(text.text().replace(`{${key}}`, data[key]));
+            })
+        }
+
+         const applyDataInBarField = (barcode) => {
+             const canvas = document.createElement('canvas');
+
+             JsBarcode(canvas, '123456789', {
+                 format: "CODE128",
+                 displayValue: false,
+                 fontSize: 16,
+                 margin: 10
+             });
+
+             const image = new Image();
+             image.onload = () => {
+                 barcode.image(image);
+
+                 barcode.getLayer().batchDraw();
+             };
+
+             image.src = canvas.toDataURL();
+
+             barcode.image(image);
+         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadKonva();
+        });
+    </script>
+
+</body>
+</html>
