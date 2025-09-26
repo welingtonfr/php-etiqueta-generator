@@ -5,7 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Welin\PhpEtiquetaGenerator\EtiquetasSheet;
 
-$template = '{"attrs":{"width":500,"height":150},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"text":"{nome}","x":19.999999999999943,"y":10.999999999999943,"fontSize":20,"fill":"black","name":"text","draggable":true,"scaleX":0.890956566774098,"scaleY":1.1000000000000023},"className":"Text"},{"attrs":{"name":"barcode","width":120,"height":60,"draggable":true,"x":276.99999999999994,"y":74,"scaleX":1.7750000000000095,"scaleY":1.166666666666662},"className":"Image"},{"attrs":{"text":"Preço {preco}","x":22,"y":48,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"text":"Clique duas vezes para editar","x":216.80741923538932,"y":174.75438181840266,"fontSize":20,"fill":"black","name":"text","draggable":true,"rotation":165.68483117171718,"scaleX":0.608466506735559,"scaleY":1.100000000000001,"skewX":-2.9028120418473093e-16},"className":"Text"},{"attrs":{"keepRatio":false,"enabledAnchors":["top-left","top-right","bottom-left","bottom-right"],"x":256,"y":15},"className":"Transformer"}]}]}';
+$template = '{"attrs":{"width":500,"height":150},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"name":"barcode","width":120,"height":60,"draggable":true,"x":8,"y":323.00000000000006,"scaleX":3.1833333333333327,"scaleY":1.0499999999999998},"className":"Image"},{"attrs":{"text":"{nome}","x":7.999997436523273,"y":10,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"text":"{preco}","x":8.99999749755844,"y":39,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"name":"barcode","width":120,"height":60,"draggable":true,"x":274.00001672363373,"y":85.99999999999994,"scaleX":1.8416667180379243,"scaleY":1.0166666666666675},"className":"Image"},{"attrs":{"keepRatio":false,"enabledAnchors":["top-left","top-right","bottom-left","bottom-right"],"x":11.999997680663924,"y":36},"className":"Transformer"}]}]}';
 
 try {
 
@@ -29,9 +29,16 @@ try {
         ]
     ]);
 
-    $etiquetasSheet->render();
+    $etiquetasSheet->setSideMargin(0);
+    $etiquetasSheet->setTopMargin(0);
+    $etiquetasSheet->setCentralMargin(0);
 
+    $etiquetasSheet->render();
+//
+
+//    echo json_encode($etiquetasSheet->getDebugInfo());
     $etiquetasSheet->getPdf();
+//    file_put_contents('test.pdf', $etiquetasSheet->getPdf());
 
     echo "PDF gerado com sucesso!";
 } catch (Exception $e) {
