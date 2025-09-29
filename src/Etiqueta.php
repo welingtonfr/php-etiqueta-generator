@@ -4,33 +4,34 @@ namespace Welin\PhpEtiquetaGenerator;
 
 use Picqer\Barcode\Renderers\PngRenderer;
 use Picqer\Barcode\Types\TypeCode128;
-use Welin\PhpEtiquetaGenerator\Entities\Field;
+use Welin\PhpEtiquetaGenerator\Attributes\Field;
 
 class Etiqueta
 {
-    private string $templateJson;
     /** @var Field[] */
     private array $fields;
     private array $data;
 
-    public function __construct(array $fields, array $data, string $templateJson)
+    private EtiquetaTemplate $template;
+
+    public function __construct(array $fields, array $data, EtiquetaTemplate $template)
     {
-        $this->templateJson = $templateJson;
         $this->fields = $fields;
         $this->data = $data;
+        $this->template = $template;
     }
 
     public function getHtml(): string
     {
-        $tpl = $this->getTemplateDecoded();
-        $width = $tpl['attrs']['width'] ?? 500;
-        $height = $tpl['attrs']['height'] ?? 150;
-        $children = $tpl['children'][0]['children'] ?? [];
+        $width = $this->template->getWidth();
+        $height = $this->template->getHeight();
+        $children = $this->template->getObjects();
 
-        $html = "<div style=\"position:relative;width:{$this->pxToMm($width)}mm;height:{$this->pxToMm($height)}mm;overflow:hidden;\">";
+        $html = "<div style=\"position:relative;width:{$width}mm;height:{$height}mm;overflow:hidden;\">";
 
         foreach ($children as $item) {
             $class = $item['className'] ?? '';
+
             switch ($class) {
                 case 'Text':
                     $html .= $this->buildTextDiv($item['attrs'] ?? []);
@@ -48,14 +49,6 @@ class Etiqueta
         return $html;
     }
 
-    /**
-     * Decodifica e retorna o template JSON como array.
-     */
-    private function getTemplateDecoded(): array
-    {
-        $tpl = json_decode($this->templateJson, true);
-        return is_array($tpl) ? $tpl : [];
-    }
 
     /**
      * Monta o div de texto com estilos e substituição de campos.
@@ -99,18 +92,27 @@ class Etiqueta
     {
         $style = [];
 
-        if (isset($attrs['x'])) $style[] = "left:{$this->pxToMm($attrs['x'])}mm";
-        if (isset($attrs['y'])) $style[] = "top:{$this->pxToMm($attrs['y'])}mm";
-        if (isset($attrs['fontSize'])) $style[] = "font-size:{$this->pxToMm($attrs['fontSize'])}mm";
+        $x = $this->template->pxToMm($attrs['x'] ?? 0);
+        $y = $this->template->pxToMm($attrs['y'] ?? 0);
+
+        if ($x > $this->template->getWidth() || $y > $this->template->getHeight()) {
+            return '';
+        }
+
+        $style[] = "left:{$x}mm";
+        $style[] = "top:{$y}mm";
+
+        if (isset($attrs['fontSize'])) $style[] = "font-size:{$this->template->pxToMm($attrs['fontSize'])}mm";
         if (isset($attrs['fill'])) $style[] = "color:{$attrs['fill']}";
         if (isset($attrs['rotation'])) $style[] = "transform:rotate({$attrs['rotation']}deg)";
-        // scaleX/scaleY: implementa via transform
+
         if (isset($attrs['scaleX']) || isset($attrs['scaleY'])) {
-            $sx = isset($attrs['scaleX']) ? $attrs['scaleX'] : 1;
-            $sy = isset($attrs['scaleY']) ? $attrs['scaleY'] : 1;
+            $sx = $attrs['scaleX'] ?? 1;
+            $sy = $attrs['scaleY'] ?? 1;
             $style[] = "transform:scale({$sx},{$sy})";
             $style[] = "transform-origin: top left";
         }
+
         $style[] = "position:absolute;white-space:nowrap;font-family:sans-serif;text-align:center;line-height:100%;";
 
         return implode(';', $style);
@@ -123,20 +125,26 @@ class Etiqueta
      */
     private function buildImageDiv(array $attrs): string
     {
-        $widthImg = $attrs['width'] ?? 120;
-        $heightImg = $attrs['height'] ?? 60;
-        $x = $attrs['x'] ?? 0;
-        $y = $attrs['y'] ?? 0;
+        $widthImg = $this->template->pxToMm($attrs['width'] ?? 120);
+        $heightImg = $this->template->pxToMm($attrs['height'] ?? 60);
+        $x = $this->template->pxToMm($attrs['x'] ?? 0);
+        $y = $this->template->pxToMm($attrs['y'] ?? 0);
         $scaleX = $attrs['scaleX'] ?? 1;
         $scaleY = $attrs['scaleY'] ?? 1;
         $scaleStyle = "transform:scale({$scaleX},{$scaleY});transform-origin: top left";
 
-        $style = "position:absolute;left:{$this->pxToMm($x)}mm;top:{$this->pxToMm($y)}mm;width:{$this->pxToMm($widthImg)}mm;height:{$this->pxToMm($heightImg)}mm;text-align:center;line-height:{$this->pxToMm($heightImg)}mm;color:#444;{$scaleStyle};";
+        if ($x > $this->template->getWidth() || $y > $this->template->getHeight()) {
+            return '';
+        }
 
-        echo json_encode($attrs);
+        $style = "position:absolute;left:{$x}mm;top:{$y}mm;width:{$widthImg}mm;height:{$heightImg}mm;text-align:center;line-height:{$heightImg}mm;color:#444;{$scaleStyle};";
 
-        if (strtolower($attrs['name']) == 'barcode') {
-            $barcode = (new TypeCode128())->getBarcode('081231723897');
+        if (strtolower($attrs['name']) == Field::BARCODE_LABEL) {
+            $barcodeValue = $this->getBarcodeValue();
+
+            if (!$barcodeValue) return '';
+
+            $barcode = (new TypeCode128())->getBarcode($barcodeValue);
             $renderer = new PngRenderer();
             return '<img style="'.$style.'" src="data:image/png;base64,' . base64_encode($renderer->render($barcode, $barcode->getWidth() * 2)) . '">';
         }
@@ -144,8 +152,16 @@ class Etiqueta
         return "<div style=\"$style\">[barcode]</div>";
     }
 
-    private function pxToMm(float $px): float
+    private function getBarcodeValue(): string|null
     {
-        return $px * 0.2645833333;
+        $barcodeFields = array_values(array_filter($this->fields, function ($field) {
+            return $field->getLabel() === Field::BARCODE_LABEL;
+        }));
+
+        if (empty($barcodeFields)) {
+            return null;
+        }
+
+        return $this->data[$barcodeFields[0]->getDataKey()] ?? null;
     }
 }

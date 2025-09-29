@@ -5,32 +5,36 @@ namespace Welin\PhpEtiquetaGenerator;
 use HeadlessChromium\BrowserFactory;
 use HeadlessChromium\Exception\CommunicationException;
 use HeadlessChromium\Exception\NoResponseAvailable;
-use mikehaertl\wkhtmlto\Pdf;
-use Mpdf\Mpdf;
+use HeadlessChromium\Page;
+use setasign\Fpdi\Fpdi;
+use Welin\PhpEtiquetaGenerator\Attributes\Field;
+use Welin\PhpEtiquetaGenerator\Attributes\PageMargin;
 
 class EtiquetasSheet
 {
-    private string $templateJson;
-    private array $fields;
-    private array $data;
+    private array $data = [];
+
+    /**
+     * @var Field[]
+     */
+    private array $fields = [];
 
     /**
      * @var Etiqueta[]
      **/
     private array $etiquetas = [];
-
-    private int $sideMargin = 0;
-    private int $topMargin = 0;
-    private int $centralMargin = 0;
-    private int $colunas = 1;
-    private float $etiquetaWidth = 100;
-    private float $etiquetaHeight = 30;
+    private PageMargin $pageMargin;
+    private EtiquetaTemplate $etiquetaTemplate;
+    private int $colunas = 3;
 
 
-    public function __construct(string $templateJson, array $fields)
+    public function __construct(
+         PageMargin $pageMargin,
+         EtiquetaTemplate $etiquetaTemplate
+    )
     {
-        $this->templateJson = $templateJson;
-        $this->fields = $fields;
+        $this->pageMargin = $pageMargin;
+        $this->etiquetaTemplate = $etiquetaTemplate;
     }
 
     public function setData(array $data): void
@@ -38,26 +42,14 @@ class EtiquetasSheet
         $this->data = $data;
     }
 
+    public function setFields(array $fields): void
+    {
+        $this->fields = $fields;
+    }
+
     public function setColunas(int $colunas): void
     {
         $this->colunas = $colunas;
-    }
-
-    public function setSideMargin(int $sideMargin): void
-    {
-        $this->sideMargin = $sideMargin;
-    }
-
-
-    public function setTopMargin(int $topMargin): void
-    {
-        $this->topMargin = $topMargin;
-    }
-
-
-    public function setCentralMargin(int $centralMargin): void
-    {
-        $this->centralMargin = $centralMargin;
     }
 
     public function render(): void
@@ -101,49 +93,28 @@ class EtiquetasSheet
 
         try {
             $page = $browser->createPage();
-           $pageWidth = ($this->etiquetaWidth * $this->colunas) + ($this->centralMargin * ($this->colunas - 1)) + ($this->sideMargin * 2);
-           $pageHeight = $this->etiquetaHeight + ($this->topMargin * 2);
+            $pageWidth = ($this->etiquetaTemplate->getWidth() * $this->colunas) + $this->pageMargin->getTotalInlineMargins($this->colunas);
+            $pageHeight = $this->etiquetaTemplate->getHeight() + $this->pageMargin->getTopMargin();
 
-            $pdfPages = [];
-            $totalEtiquetas = count($this->etiquetas);
+            $htmlPagina = $this->generatePageHtml();
 
-            for ($i = 0; $i < $totalEtiquetas; $i += $this->colunas) {
-                $htmlPagina = $this->generatePageHtml($i);
+            file_put_contents('debug.html', $htmlPagina);
 
-                if ($i == 0) {
-                 file_put_contents('debug.html', $htmlPagina);
-                }
+            $page->setHtml($htmlPagina, 15000);
 
-                $page->setHtml($htmlPagina);
+            $pdf = $page->pdf([
+                'printBackground' => false,
+                'marginTop' => 0,
+                'marginBottom' => 0,
+                'marginLeft' => 0,
+                'marginRight' => 0,
+                'paperWidth' => $pageWidth * 0.0393700787,
+                'paperHeight' => $pageHeight * 0.0393700787,
+                'preferCSSPageSize' => false,
+                'displayHeaderFooter' => false
+            ]);
 
-                $pdf = $page->pdf([
-                    'printBackground' => false,
-                    'marginTop' => 0,
-                    'marginBottom' => 0,
-                    'marginLeft' => 0,
-                    'marginRight' => 0,
-                    'paperWidth' => $pageWidth * 0.0393700787,
-                    'paperHeight' => $pageHeight * 0.0393700787,
-                    'preferCSSPageSize' => false,
-                     'displayHeaderFooter' => false
-                ]);
-
-                $pdfPages[] = $pdf->getBase64();
-            }
-
-
-            file_put_contents('test.pdf', base64_decode($pdfPages[0]));
-
-        return '';
-//            $pdf = new Pdf();
-//
-//            foreach ($pdfPages as $pdfPage) {
-//                $pdf->addPage($pdfPage);
-//
-//            }
-//
-//            return $pdf->saveAs('test.pdf');
-
+            return $pdf->getRawBinary();
         } catch (CommunicationException | NoResponseAvailable $e) {
             throw new \Exception('Erro de comunicação com o Chrome: ' . $e->getMessage());
         } catch (\Exception $e) {
@@ -153,7 +124,7 @@ class EtiquetasSheet
         }
     }
 
-    private function generatePageHtml(int $startIndex): string
+    private function generatePageHtml(): string
     {
         $html = '<!DOCTYPE html>
         <html lang="pt-BR">
@@ -165,7 +136,7 @@ class EtiquetasSheet
                     margin: 0;
                     padding: 0;
                     font-family: sans-serif;
-                }
+                
                 
                 html, body {
                     width: 100%;
@@ -174,25 +145,29 @@ class EtiquetasSheet
                 }
                 
                 .page-container {
-                  margin-left: '.$this->sideMargin.'mm;
-                  margin-right: '.$this->sideMargin.'mm;
-                  margin-top: '.$this->topMargin.'mm;
+               
                 }
                 
                 .row-container {
                     display: flex;
+                    flex-wrap: wrap;
                     flex-direction: row;
                     align-items: flex-start;
                     justify-content: start;
-                    gap: '.$this->centralMargin.'mm;
+                    gap: '.$this->pageMargin->getCentralMargin().'mm;
+                    margin-left: '.$this->pageMargin->getLeftMargin().'mm;
+                    margin-right: '.$this->pageMargin->getRightMargin().'mm;
                 }
                 
                 .etiqueta-wrapper {
                     overflow: hidden;
                     position: relative;
                 }
-
                 
+                .etiqueta-content {
+                     margin-top: '.$this->pageMargin->getTopMargin().'mm;}
+                }
+
                 @media print {
                     * {
                         -webkit-print-color-adjust: exact !important;
@@ -205,36 +180,24 @@ class EtiquetasSheet
         <body>
             <div class="page-container">
                 <div class="row-container">';
-
-                // Adiciona as etiquetas da linha atual
-                for ($j = 0; $j < $this->colunas; $j++) {
-                    $etiquetaIndex = $startIndex + $j;
-
-                    $html .= '<div class="etiqueta-wrapper">';
-
-                    if ($etiquetaIndex < count($this->etiquetas)) {
-                        $etiquetaHtml = $this->etiquetas[$etiquetaIndex]->getHtml();
-                        echo $etiquetaHtml;
-                        $etiquetaHtml = $this->processEtiquetaHtml($etiquetaHtml);
+                    foreach ($this->processEtiquetasHtml() as $etiquetaHtml) {
+                        $html .= '<div class="etiqueta-wrapper">';
                         $html .= '<div class="etiqueta-content">' . $etiquetaHtml . '</div>';
+                        $html .= '</div>';
                     }
-
-                    $html .= '</div>';
-                }
-
                 $html .= '</div>
             </div>
-            
-           
         </body>
         </html>';
 
         return $html;
     }
 
-    private function processEtiquetaHtml(string $html): string
+    private function processEtiquetasHtml()
     {
-        return trim($html);
+        for ($index = 0; $index < count($this->etiquetas); $index++) {
+            yield $this->etiquetas[$index]->getHtml();
+        }
     }
 
     private function generateEtiquetas(): void
@@ -242,43 +205,11 @@ class EtiquetasSheet
         $this->etiquetas = [];
 
         foreach ($this->data as $item) {
-            $this->etiquetas[] = new Etiqueta($this->fields, $item, $this->templateJson);
+            $this->etiquetas[] = new Etiqueta($this->fields, $item, $this->etiquetaTemplate);
         }
 
         if (empty($this->etiquetas)) {
             throw new \Exception('Nenhuma etiqueta foi gerada. Verifique os dados fornecidos.');
         }
-    }
-
-    /**
-     * Gera uma prévia HTML de todas as etiquetas para debug
-     */
-    public function getPreviewHtml(): string
-    {
-        if (empty($this->etiquetas)) {
-            $this->generateEtiquetas();
-        }
-
-        return $this->generatePageHtml(0);
-    }
-
-    /**
-     * Retorna informações de debug sobre as etiquetas
-     */
-    public function getDebugInfo(): array
-    {
-        return [
-            'total_etiquetas' => count($this->etiquetas),
-            'colunas' => $this->colunas,
-            'largura_pagina_mm' => ($this->larguraEtiqueta * $this->colunas) + ($this->espacamento * ($this->colunas + 1)),
-            'altura_pagina_mm' => $this->alturaEtiqueta + ($this->espacamento * 2),
-            'largura_etiqueta' => $this->larguraEtiqueta,
-            'altura_etiqueta' => $this->alturaEtiqueta,
-            'espacamento' => $this->espacamento,
-            'campos' => array_map(fn($field) => [
-                'label' => $field->getLabel(),
-                'dataKey' => $field->getDataKey()
-            ], $this->fields)
-        ];
     }
 }

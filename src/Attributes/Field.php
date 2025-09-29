@@ -1,9 +1,11 @@
 <?php
 
-namespace Welin\PhpEtiquetaGenerator\Entities;
+namespace Welin\PhpEtiquetaGenerator\Attributes;
 
 class Field
 {
+    const BARCODE_LABEL = 'barcode';
+
     private string $label;
     private string $dataKey;
 
@@ -24,5 +26,10 @@ class Field
     public function getDataKey(): string
     {
         return $this->dataKey;
+    }
+
+    static function barcode(string $dataKey): Field
+    {
+        return new Field('barcode', $dataKey);
     }
 }
