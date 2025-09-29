@@ -24,7 +24,7 @@ class EtiquetaTemplate
 
     public function pxToMm(float $px): float
     {
-        return round($px * 0.2645833333);
+        return round($px * 0.2645833333) / 2;
     }
 
     public function getObjects(): array
