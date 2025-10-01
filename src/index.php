@@ -8,7 +8,7 @@ use Welin\PhpEtiquetaGenerator\Attributes\PageMargin;
 use Welin\PhpEtiquetaGenerator\EtiquetasSheet;
 use Welin\PhpEtiquetaGenerator\EtiquetaTemplate;
 
-$template = '{"attrs":{"width":718.110236229,"height":90.7086614184},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"text":"{nome}","x":8.040414840158249,"y":0.741429801894915,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"text":"{preco}","x":9.039452582059234,"y":22.813436692506464,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"name":"barcode","width":120,"height":60,"draggable":true,"x":114.88732867712326,"y":53.17347114556418,"scaleX":2.6067857015574396,"scaleY":0.5318059144415693},"className":"Image"},{"attrs":{"keepRatio":false,"enabledAnchors":["top-left","top-right","bottom-left","bottom-right"],"x":118.88549128621833,"y":53.17347114556418},"className":"Transformer"}]}]}';
+$template = '{"attrs":{"width":226.77165354599998,"height":188.976377955,"className":"stage"},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"text":"teste","x":10,"y":10,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"text":"teste2","x":172.28923167099998,"y":168.976377955,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"keepRatio":false,"rotateEnabled":false,"enabledAnchors":["top-left","top-right","bottom-left","bottom-right"],"x":177.39425873725094,"y":173.02695551513148},"className":"Transformer"}]}]}';
 
 $products = [
     ['price' => 28.84, 'name' => 'Produto 1', 'barcode' => '100000001'],
@@ -120,7 +120,7 @@ try {
     $nameField = new Field('nome', 'name');
     $barcodeField = Field::barcode('barcode');
 
-    $pageMargin = new PageMargin(rightMargin: 2, leftMargin: 2, topMargin: 3, centralMargin: 0);
+    $pageMargin = new PageMargin(rightMargin: 2, leftMargin: 2, topMargin: 0, centralMargin: 3);
     $etiquetaTemplate = new EtiquetaTemplate($template);
 
     $etiquetasSheet = new EtiquetasSheet($pageMargin, $etiquetaTemplate);
@@ -129,7 +129,7 @@ try {
 
     $etiquetasSheet->setData($products);
 
-    $etiquetasSheet->setColunas(1);
+    $etiquetasSheet->setColunas(3);
 
     $etiquetasSheet->render();
 
