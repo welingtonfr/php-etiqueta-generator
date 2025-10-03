@@ -76,6 +76,7 @@ class EtiquetasSheet
 
         return Browsershot::html($htmlPagina)
             ->setChromePath(getenv('CHROME_PATH') ?? "/usr/bin/chromium-browser")
+            ->addChromiumArguments(['no-sandbox', 'disable-setuid-sandbox'])
             ->margins(0, 0, 0, 0)
             ->paperSize($pageWidth, $pageHeight)
             ->pdf();
