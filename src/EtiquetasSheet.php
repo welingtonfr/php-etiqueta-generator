@@ -75,7 +75,7 @@ class EtiquetasSheet
         $htmlPagina = $this->generatePageHtml();
 
         return Browsershot::html($htmlPagina)
-            ->setChromePath(getenv('CHROME_PATH') ?? "/usr/bin/chromium")
+            ->setChromePath(getenv('CHROME_PATH') ?? "/usr/bin/chromium-browser")
             ->margins(0, 0, 0, 0)
             ->paperSize($pageWidth, $pageHeight)
             ->pdf();
