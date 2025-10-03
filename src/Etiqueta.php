@@ -44,8 +44,6 @@ class Etiqueta
 
         $html .= '</div>';
 
-        file_put_contents('etiqueta.html', $html);
-
         return $html;
     }
 
