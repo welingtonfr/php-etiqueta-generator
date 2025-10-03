@@ -1,1 +1,2 @@
+git subtree split --prefix=php-etiqueta-generator -b php-etiqueta-generator
 git push git@github.com:welingtonfr/php-etiqueta-generator.git php-etiqueta-generator:main
