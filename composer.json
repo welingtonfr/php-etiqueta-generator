@@ -18,6 +18,7 @@
         "setasign/fpdf": "1.8.6",
         "setasign/fpdi": "^2.5",
         "chrome-php/chrome": "^1.14",
-        "picqer/php-barcode-generator": "^3.2"
+        "picqer/php-barcode-generator": "^3.2",
+        "spatie/browsershot": "^5.0"
     }
 }

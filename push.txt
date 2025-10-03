@@ -1,0 +1,1 @@
+git push git@github.com:welingtonfr/php-etiqueta-generator.git php-etiqueta-generator:main

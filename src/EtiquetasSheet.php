@@ -7,6 +7,7 @@ use HeadlessChromium\Exception\CommunicationException;
 use HeadlessChromium\Exception\NoResponseAvailable;
 use HeadlessChromium\Page;
 use setasign\Fpdi\Fpdi;
+use Spatie\Browsershot\Browsershot;
 use Welin\PhpEtiquetaGenerator\Attributes\Field;
 use Welin\PhpEtiquetaGenerator\Attributes\PageMargin;
 
@@ -63,7 +64,20 @@ class EtiquetasSheet
             throw new \Exception('Nenhuma etiqueta para gerar. Certifique-se de chamar render() primeiro.');
         }
 
-        return $this->generatePdfWithChrome();
+        return $this->generatePdfWithBrowserShot();
+    }
+
+    public function generatePdfWithBrowserShot(): string
+    {
+        $pageWidth = ($this->etiquetaTemplate->getWidth() * $this->colunas) + $this->pageMargin->getTotalInlineMargins($this->colunas);
+        $pageHeight = $this->etiquetaTemplate->getHeight() + $this->pageMargin->getTopMargin();
+
+        $htmlPagina = $this->generatePageHtml();
+
+        return Browsershot::html($htmlPagina)
+            ->margins(0, 0, 0, 0)
+            ->paperSize($pageWidth, $pageHeight)
+            ->pdf();
     }
 
     private function generatePdfWithChrome(): string
