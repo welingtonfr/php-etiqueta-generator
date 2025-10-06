@@ -4,11 +4,6 @@ namespace Welin\PhpEtiquetaGenerator;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use HeadlessChromium\BrowserFactory;
-use HeadlessChromium\Exception\CommunicationException;
-use HeadlessChromium\Exception\NoResponseAvailable;
-use HeadlessChromium\Page;
-use setasign\Fpdi\Fpdi;
 use Spatie\Browsershot\Browsershot;
 use Welin\PhpEtiquetaGenerator\Attributes\Field;
 use Welin\PhpEtiquetaGenerator\Attributes\PageMargin;
