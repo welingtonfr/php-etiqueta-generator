@@ -27,7 +27,7 @@ class Etiqueta
         $height = $this->template->getHeight();
         $children = $this->template->getObjects();
 
-        $html = "<div style=\"position:relative;width:{$width}mm;height:{$height}mm;overflow:hidden;\">";
+        $html = "<div style=\"position:relative;width:{$width}mm;height:{$height}mm;overflow:visible;display:block;\">";
 
         foreach ($children as $item) {
             $class = $item['className'] ?? '';

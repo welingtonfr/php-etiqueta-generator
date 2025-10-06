@@ -4,6 +4,11 @@ namespace Welin\PhpEtiquetaGenerator;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use HeadlessChromium\BrowserFactory;
+use HeadlessChromium\Exception\CommunicationException;
+use HeadlessChromium\Exception\NoResponseAvailable;
+use HeadlessChromium\Page;
+use setasign\Fpdi\Fpdi;
 use Spatie\Browsershot\Browsershot;
 use Welin\PhpEtiquetaGenerator\Attributes\Field;
 use Welin\PhpEtiquetaGenerator\Attributes\PageMargin;
@@ -98,15 +103,23 @@ class EtiquetasSheet
     {
         $pageWidth = $this->getPageWidth();
         $pageHeight = $this->getPageHeight();
+        $totalEtiquetas = count($this->etiquetas);
 
         $options = new Options();
         $options->set('isRemoteEnabled', true);
         $options->set('isHtml5ParserEnabled', true);
-        $options->set('isFontSubsettingEnabled', true);
+        $options->set('isFontSubsettingEnabled', false);
+        $options->set('debugKeepTemp', true);
+        $options->set('debugLayout', true);
+        $options->set('chroot', '/');
+        $options->set('tempDir', sys_get_temp_dir());
 
         $dompdf = new Dompdf($options);
 
         $htmlPagina = $this->generatePageHtml();
+
+        file_put_contents('debug_full.html', $htmlPagina);
+
         $dompdf->loadHtml($htmlPagina);
 
         $widthInPoints = $pageWidth * 2.834645669;
@@ -121,21 +134,100 @@ class EtiquetasSheet
 
     private function generatePageHtml(): string
     {
+        $html = '<!DOCTYPE html>
+            <html lang="pt-BR">
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    * {
+                        margin: 0;
+                        padding: 0;
+                        box-sizing: border-box;
+                    }
+                    
+                    html, body {
+                        width: 100%;
+                        height: 100%;
+                        font-family: sans-serif;
+                    }
+                    
+                    .page-container {
+                        width: 100%;
+                        height: 100%;
+                        padding: '.$this->pageMargin->getTopMargin().'mm '.$this->pageMargin->getRightMargin().'mm 0 '.$this->pageMargin->getLeftMargin().'mm;
+                        page-break-after: always;
+                        position: relative;
+                    }
+                    
+                    .page-container:last-child {
+                        page-break-after: auto;
+                    }
+                    
+                    .row-container {
+                        display: block;
+                        width: 100%;
+                        position: relative;
+                    }
+                    
+                    .etiqueta-wrapper {
+                        display: inline-block;
+                        vertical-align: top;
+                        margin-right: '.$this->pageMargin->getCentralMargin().'mm;
+                        margin-bottom: '.$this->pageMargin->getTopMargin().'mm;
+                        overflow: visible;
+                        position: relative;
+                    }
+                    
+                    .etiqueta-wrapper:nth-child('.$this->colunas.'n) {
+                        margin-right: 0;
+                    }
+                    
+                    .etiqueta-content {
+                        display: block;
+                        position: relative;
+                        z-index: 1;
+                    }
 
-        $html = '<!DOCTYPE html><html><head><meta charset="utf-8">';
-        $html .= '<style>*{margin:0;padding:0;box-sizing:border-box}';
-        $html .= 'html,body{width:100%;height:100%;overflow:hidden}';
-        $html .= '.row-container{display:flex;flex-wrap:wrap;gap:'.$this->pageMargin->getCentralMargin().'mm;';
-        $html .= 'margin:'.$this->pageMargin->getTopMargin().'mm '.$this->pageMargin->getRightMargin().'mm 0 '.$this->pageMargin->getLeftMargin().'mm}';
-        $html .= '.etiqueta-wrapper{overflow:hidden;position:relative}';
-        $html .= '@media print{*{-webkit-print-color-adjust:exact!important;color-adjust:exact!important}}';
-        $html .= '</style></head><body><div class="row-container">';
-    
-        foreach ($this->processEtiquetasHtml() as $etiquetaHtml) {
-            $html .= '<div class="etiqueta-wrapper">' . $etiquetaHtml . '</div>';
+                    @media print {
+                        * {
+                            -webkit-print-color-adjust: exact !important;
+                            color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                        }
+                        
+                        .page-container {
+                            page-break-inside: avoid;
+                        }
+                    }
+                </style>
+            </head>
+        <body>';
+
+        $totalEtiquetas = count($this->etiquetas);
+        $etiquetasPorPagina = $this->colunas;
+        $totalPaginas = ceil($totalEtiquetas / $etiquetasPorPagina);
+
+        for ($pagina = 0; $pagina < $totalPaginas; $pagina++) {
+            $inicioEtiqueta = $pagina * $etiquetasPorPagina;
+            $fimEtiqueta = min($inicioEtiqueta + $etiquetasPorPagina, $totalEtiquetas);
+
+            $html .= '<div class="page-container">
+                        <div class="row-container">';
+
+            for ($i = $inicioEtiqueta; $i < $fimEtiqueta; $i++) {
+                $etiqueta = $this->etiquetas[$i];
+                $html .= '<div class="etiqueta-wrapper">';
+                $html .= '<div class="etiqueta-content">' . $etiqueta->getHtml() . '</div>';
+                $html .= '</div>';
+            }
+
+            $html .= '</div>
+                    </div>';
         }
 
-        $html .= '</div></body></html>';
+        $html .= '</body>
+        </html>';
 
         return $html;
     }
