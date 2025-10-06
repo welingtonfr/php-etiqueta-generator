@@ -63,37 +63,6 @@ class EtiquetasSheet
         return $this->generatePdfWithDomPdf();
     }
 
-    public function generatePdfWithBrowserShot(): string
-    {
-        $htmlPagina = $this->generatePageHtml();
-
-        return Browsershot::html($htmlPagina)
-            ->setChromePath(getenv('CHROME_PATH') ?? "/usr/bin/chromium")
-            ->addChromiumArguments([
-                'no-sandbox',
-                'disable-setuid-sandbox',
-                'disable-gpu',
-                'disable-dev-shm-usage',
-                'single-process',
-                'no-zygote',
-                'disable-extensions',
-                'disable-background-networking',
-                'disable-sync',
-                'disable-translate',
-                'disable-background-timer-throttling',
-                'memory-pressure-off',
-                'max_old_space_size=4096',
-
-            ])
-            ->timeout(120)
-            ->setDelay(0)
-            ->showBackground()
-            ->scale(1)
-            ->margins(0, 0, 0, 0)
-            ->paperSize($this->getPageWidth(), $this->getPageHeight())
-            ->pdf();
-    }
-
     private function generatePdfWithDomPdf(): string
     {
         $pageWidth = $this->getPageWidth();
@@ -104,7 +73,6 @@ class EtiquetasSheet
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isFontSubsettingEnabled', false);
         $options->set('debugKeepTemp', true);
-        $options->set('debugLayout', true);
         $options->set('chroot', '/');
         $options->set('tempDir', sys_get_temp_dir());
 
