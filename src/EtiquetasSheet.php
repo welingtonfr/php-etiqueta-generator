@@ -100,7 +100,6 @@ class EtiquetasSheet
         $pageHeight = $this->getPageHeight();
 
         $options = new Options();
-        $options->set('defaultFont', 'Arial');
         $options->set('isRemoteEnabled', true);
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isFontSubsettingEnabled', true);
