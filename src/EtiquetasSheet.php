@@ -80,8 +80,6 @@ class EtiquetasSheet
 
         $htmlPagina = $this->generatePageHtml();
 
-        file_put_contents('debug_full.html', $htmlPagina);
-
         $dompdf->loadHtml($htmlPagina);
 
         $widthInPoints = $pageWidth * 2.834645669;
