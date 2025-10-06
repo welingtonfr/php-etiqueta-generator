@@ -27,7 +27,7 @@ class Etiqueta
         $height = $this->template->getHeight();
         $children = $this->template->getObjects();
 
-        $html = "<div style=\"position:relative;width:{$width}mm;height:{$height}mm;overflow:hidden;display:block;\">";
+        $html = "<div style=\"position:relative;width:{$width}mm;height:{$height}mm;overflow:hidden;\">";
 
         foreach ($children as $item) {
             $class = $item['className'] ?? '';
@@ -100,18 +100,6 @@ class Etiqueta
         $style[] = "left:{$x}mm";
         $style[] = "top:{$y}mm";
 
-        $maxWidth = $this->template->getWidth() - $x;
-        $maxHeight = $this->template->getHeight() - $y;
-
-        if ($maxWidth > 0) {
-            $style[] = "max-width:{$maxWidth}mm";
-            $style[] = "width:{$maxWidth}mm";
-        }
-
-        if ($maxHeight > 0) {
-            $style[] = "max-height:{$maxHeight}mm";
-        }
-
         if (isset($attrs['fontSize'])) $style[] = "font-size:{$this->template->pxToMm($attrs['fontSize'])}mm";
         if (isset($attrs['fill'])) $style[] = "color:{$attrs['fill']}";
         if (isset($attrs['rotation'])) $style[] = "transform:rotate({$attrs['rotation']}deg)";
@@ -123,11 +111,9 @@ class Etiqueta
             $style[] = "transform-origin: top left";
         }
 
-        $style[] = "position:absolute;font-family:sans-serif;text-align:center;line-height:100%;";
-        $style[] = "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;";
+        $style[] = "position:absolute;white-space:nowrap;font-family:sans-serif;text-align:center;line-height:100%;";
 
         return implode(';', $style);
-
     }
 
     /**
