@@ -98,7 +98,6 @@ class EtiquetasSheet
     {
         $pageWidth = $this->getPageWidth();
         $pageHeight = $this->getPageHeight();
-        $totalEtiquetas = count($this->etiquetas);
 
         $options = new Options();
         $options->set('isRemoteEnabled', true);

@@ -15,9 +15,7 @@
     ],
     "require": {
         "php": ">=8.2",
-        "setasign/fpdf": "1.8.6",
-        "setasign/fpdi": "^2.5",
         "picqer/php-barcode-generator": "^3.2",
-        "spatie/browsershot": "^5.0"
+        "dompdf/dompdf": "^3.1"
     }
 }
