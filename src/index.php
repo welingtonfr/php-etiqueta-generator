@@ -8,7 +8,7 @@ use Welin\PhpEtiquetaGenerator\Attributes\PageMargin;
 use Welin\PhpEtiquetaGenerator\EtiquetasSheet;
 use Welin\PhpEtiquetaGenerator\EtiquetaTemplate;
 
-$template = '{"attrs":{"width":226.77165354599998,"height":188.976377955,"className":"stage"},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"text":"teste","x":10,"y":10,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"text":"teste2","x":172.28923167099998,"y":168.976377955,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"keepRatio":false,"rotateEnabled":false,"enabledAnchors":["top-left","top-right","bottom-left","bottom-right"],"x":177.39425873725094,"y":173.02695551513148},"className":"Transformer"}]}]}';
+$template = '{"attrs":{"width":302.362204728,"height":302.362204728,"className":"stage"},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"text":"smfokfdnjokjgfnmokjbfgnjknjgkojkgjfdkgjfkhjgfgjhjfjgnjgojderwhngojfdngjfenbjfgnjbgnjgrfnojgnrfojngbfngfthnjftgngojftgnmokjgnojbgnbojghbojfrtnbojgftnogbkj nojgnojbfngojbfngojb","x":9.999999999999975,"y":6.010517690397994,"width":148.99159673836093,"height":282.8662231630908,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"keepRatio":false,"rotateEnabled":false,"x":3.9992500457820626,"y":7.000874946587558},"className":"Transformer"}]}]}';
 
 $products = [
     ['price' => 28.84, 'name' => 'Produto 1', 'barcode' => '100000001'],
@@ -129,7 +129,7 @@ try {
 
     $etiquetasSheet->setData($products);
 
-    $etiquetasSheet->setColunas(3);
+    $etiquetasSheet->setColunas(1);
 
     $etiquetasSheet->render();
 

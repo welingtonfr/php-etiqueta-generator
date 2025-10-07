@@ -72,7 +72,7 @@ class EtiquetasSheet
         $options->set('isRemoteEnabled', true);
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isFontSubsettingEnabled', false);
-        $options->set('debugKeepTemp', true);
+       // $options->set('debugLayout', true);
         $options->set('chroot', '/');
         $options->set('tempDir', sys_get_temp_dir());
 

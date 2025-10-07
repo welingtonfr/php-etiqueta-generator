@@ -92,6 +92,8 @@ class Etiqueta
 
         $x = $this->template->pxToMm($attrs['x'] ?? 0);
         $y = $this->template->pxToMm($attrs['y'] ?? 0);
+        $width = $this->template->pxToMm($attrs['width'] ?? 0);
+        $height = $this->template->pxToMm($attrs['height'] ?? 0);
 
         if ($x > $this->template->getWidth() || $y > $this->template->getHeight()) {
             return '';
@@ -99,6 +101,9 @@ class Etiqueta
 
         $style[] = "left:{$x}mm";
         $style[] = "top:{$y}mm";
+
+        $style[] = "width:{$width}mm";
+        $style[] = "height:{$height}mm";
 
         if (isset($attrs['fontSize'])) $style[] = "font-size:{$this->template->pxToMm($attrs['fontSize'])}mm";
         if (isset($attrs['fill'])) $style[] = "color:{$attrs['fill']}";
@@ -111,7 +116,7 @@ class Etiqueta
             $style[] = "transform-origin: top left";
         }
 
-        $style[] = "position:absolute;white-space:nowrap;font-family:sans-serif;text-align:center;line-height:100%;";
+        $style[] = "position:absolute;white-space:wrap;overflow-wrap:anywhere;text-wrap:wrap;word-break:break-all;font-family:sans-serif;text-align:left;line-height:100%;";
 
         return implode(';', $style);
     }
