@@ -117,7 +117,7 @@ class Etiqueta
             $style[] = "transform-origin: top left";
         }
 
-        $style[] = "position:absolute;white-space:wrap;overflow-wrap:anywhere;text-wrap:wrap;word-break:break-all;font-family:sans-serif;text-align:left;line-height:100%;";
+        $style[] = "position:absolute;overflow:hidden;white-space:wrap;overflow-wrap:anywhere;text-wrap:wrap;word-break:break-all;font-family:sans-serif;text-align:left;line-height:100%;";
 
         return implode(';', $style);
     }
