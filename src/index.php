@@ -8,7 +8,7 @@ use Welin\PhpEtiquetaGenerator\Attributes\PageMargin;
 use Welin\PhpEtiquetaGenerator\EtiquetasSheet;
 use Welin\PhpEtiquetaGenerator\EtiquetaTemplate;
 
-$template = '{"attrs":{"width":302.362204728,"height":302.362204728,"className":"stage"},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"text":"smfokfdnjokjgfnmokjbfgnjknjgkojkgjfdkgjfkhjgfgjhjfjgnjgojderwhngojfdngjfenbjfgnjbgnjgrfnojgnrfojngbfngfthnjftgngojftgnmokjgnojbgnbojghbojfrtnbojgftnogbkj nojgnojbfngojbfngojb","x":9.999999999999975,"y":6.010517690397994,"width":148.99159673836093,"height":282.8662231630908,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"keepRatio":false,"rotateEnabled":false,"x":3.9992500457820626,"y":7.000874946587558},"className":"Transformer"}]}]}';
+$template = '{"attrs":{"width":302.362204728,"height":302.362204728,"className":"stage"},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"text":"Clique duas vezes para editar","x":10,"y":10,"width":202.362204728,"fontSize":20,"fill":"black","name":"text","visible":false,"fontStyle":"bold"},"className":"Text"},{"attrs":{"text":"Clique duas vezes para editar","x":10,"y":10,"width":202.362204728,"fontSize":20,"fill":"black","name":"text","draggable":true,"fontStyle":"bold"},"className":"Text"},{"attrs":{"text":"Clique duas vezes para editar","x":8.002367661805275,"y":55.94554377847856,"width":292.2556599467624,"height":40.00000000000002,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"keepRatio":false,"rotateEnabled":false},"className":"Transformer"}]}]}';
 
 $products = [
     ['price' => 28.84, 'name' => 'Produto 1', 'barcode' => '100000001'],

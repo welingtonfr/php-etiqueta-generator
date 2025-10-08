@@ -105,6 +105,7 @@ class Etiqueta
         $style[] = "width:{$width}mm";
         $style[] = "height:{$height}mm";
 
+        if (isset($attrs['fontStyle'])) $style[] = "font-weight:{$attrs['fontStyle']}";
         if (isset($attrs['fontSize'])) $style[] = "font-size:{$this->template->pxToMm($attrs['fontSize'])}mm";
         if (isset($attrs['fill'])) $style[] = "color:{$attrs['fill']}";
         if (isset($attrs['rotation'])) $style[] = "transform:rotate({$attrs['rotation']}deg)";
