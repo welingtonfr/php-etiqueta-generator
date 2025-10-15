@@ -73,7 +73,7 @@ class Etiqueta
     private function parseTextFields(string $text): string
     {
         return preg_replace_callback('/\{(\w+)\}/', function ($m) {
-            return $this->getValueByLabel($m);
+            return $this->getValueByLabel($m[1]);
         }, $text);
     }
 
