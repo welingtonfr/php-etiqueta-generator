@@ -73,13 +73,7 @@ class Etiqueta
     private function parseTextFields(string $text): string
     {
         return preg_replace_callback('/\{(\w+)\}/', function ($m) {
-            $key = strtolower($m[1]);
-            foreach ($this->fields as $f) {
-                if ($f->getLabel() === $key || $f->getDataKey() === $key) {
-                    return $this->data[$f->getDataKey()] ?? '';
-                }
-            }
-            return '';
+            return $this->getValueByLabel($m);
         }, $text);
     }
 
@@ -154,7 +148,9 @@ class Etiqueta
             return '<img style="'.$style.'" src="data:image/svg;base64,' . $barCodeBase64 . '">';
         }
 
-        return "<div style=\"$style\">[barcode]</div>";
+        $imageUrl = $this->getValueByLabel($attrs['name']);
+
+        return '<img style="'.$style.'" src="'.$imageUrl.'">';
     }
 
     private function buildBarCodeBase64(string $name): string|null
@@ -173,6 +169,19 @@ class Etiqueta
         $renderer = new SvgRenderer();
 
         return base64_encode($renderer->render($barcode, $barcode->getWidth() * 2));
+    }
+
+    private function getValueByLabel(string $label): string
+    {
+        $label = strtolower($label);
+
+        foreach ($this->fields as $f) {
+            if ($f->getLabel() === $label) {
+                return $this->data[$f->getDataKey()] ?? '';
+            }
+        }
+
+        return '';
     }
     
     private function getBarcodeValue(): string|null

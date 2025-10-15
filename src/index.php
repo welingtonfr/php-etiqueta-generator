@@ -8,10 +8,15 @@ use Welin\PhpEtiquetaGenerator\Attributes\PageMargin;
 use Welin\PhpEtiquetaGenerator\EtiquetasSheet;
 use Welin\PhpEtiquetaGenerator\EtiquetaTemplate;
 
-$template = '{"attrs":{"width":793.700787411,"height":211.6535433096,"className":"stage"},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"text":"{nome}","height":205.204781046692,"align":"center","fontSize":20,"fill":"black","name":"text","draggable":true,"width":588.7028872755756},"className":"Text"},{"attrs":{"name":"EAN13","width":120,"height":60,"x":595.1487185685031,"y":105.0626767846433,"scaleX":1.5918953915433425,"scaleY":1.6510819005309476,"fontSize":20,"draggable":true},"className":"Image"},{"attrs":{"keepRatio":false,"rotateEnabled":false,"x":-3.001159731769036,"y":-3.004993387065902},"className":"Transformer"}]}]}';
+$template = '{"attrs":{"width":302.362204728,"height":302.362204728,"className":"stage"},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"name":"imagem_produto","width":120,"height":120,"fill":"#a0a0a0","x":10,"y":10,"fontSize":20,"draggable":true},"className":"Image"},{"attrs":{"text":"Clique duas vezes para editar","x":11.997632338194698,"y":151.83189601182514,"height":137.86030795348856,"fontSize":20,"fill":"black","name":"text","draggable":true,"width":275.5865872350709},"className":"Text"},{"attrs":{"keepRatio":false,"rotateEnabled":false},"className":"Transformer"}]}]}';
 
 $products = [
-    ['price' => 28.84, 'name' => 'Produto 1 asd makf ndwj ngjdnfj dnjfdngbjf nikjfnbfjgbn fjbnfoj nvjfng jfnjvbf njvb nrjvnfrjng jfnbjfnj vnrjn ', 'barcode' => '34343434343434'],
+    [
+        'price' => 28.84,
+        'name' => 'Produto 1 asd makf ndwj ngjdnfj dnjfdngbjf nikjfnbfjgbn fjbnfoj nvjfng jfnjvbf njvb nrjvnfrjng jfnbjfnj vnrjn ',
+        'barcode' => '34343434343434',
+        'image_url' => 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'
+    ],
   ];
 
 
@@ -19,6 +24,7 @@ try {
 
     $priceField = new Field('preco', 'price');
     $nameField = new Field('nome', 'name');
+    $nameField = new Field('imagem_produto', 'image_url');
     $barcodeField = Field::barcode('barcode');
 
     $pageMargin = new PageMargin(rightMargin: 0, leftMargin: 0, topMargin: 0, centralMargin: 9);
