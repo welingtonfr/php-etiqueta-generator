@@ -95,7 +95,7 @@ class Etiqueta
         $y = $this->template->pxToMm($attrs['y'] ?? 0);
         $width = $this->template->pxToMm($attrs['width'] ?? 0);
         $height = $this->template->pxToMm($attrs['height'] ?? 0);
-        $textAlign = $attrs['textAlign'] ?? 'left';
+        $textAlign = $attrs['align'] ?? 'left';
 
         if ($x > $this->template->getWidth() || $y > $this->template->getHeight()) {
             return '';
