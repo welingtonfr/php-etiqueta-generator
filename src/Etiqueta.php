@@ -140,7 +140,7 @@ class Etiqueta
             return '';
         }
 
-        $style = "position:absolute;left:{$x}mm;top:{$y}mm;width:{$widthImg}mm;height:{$heightImg}mm;text-align:center;line-height:{$heightImg}mm;color:#444;{$scaleStyle};";
+        $style = "position:absolute;left:{$x}mm;top:{$y}mm;width:{$widthImg}mm;height:{$heightImg}mm;text-align:center;line-height:{$heightImg}mm;color:#444;{$scaleStyle};filter:grayscale(1) contrast(2000%);";
 
         if ($attrs['name'] == Field::BARCODE_EAN13 || $attrs['name'] == Field::BARCODE_CODE39 ) {
             $barCodeBase64 = $this->buildBarCodeBase64($attrs['name']);
