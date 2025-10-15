@@ -5,6 +5,8 @@ namespace Welin\PhpEtiquetaGenerator\Attributes;
 class Field
 {
     const BARCODE_LABEL = 'barcode';
+    const BARCODE_EAN13 = 'EAN13';
+    const BARCODE_CODE39 = 'CODE39';
 
     private string $label;
     private string $dataKey;

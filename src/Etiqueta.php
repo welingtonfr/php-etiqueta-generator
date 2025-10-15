@@ -3,7 +3,8 @@
 namespace Welin\PhpEtiquetaGenerator;
 
 use Picqer\Barcode\Renderers\PngRenderer;
-use Picqer\Barcode\Types\TypeCode128;
+use Picqer\Barcode\Types\TypeCode39;
+use Picqer\Barcode\Types\TypeEan13;
 use Welin\PhpEtiquetaGenerator\Attributes\Field;
 
 class Etiqueta
@@ -94,6 +95,7 @@ class Etiqueta
         $y = $this->template->pxToMm($attrs['y'] ?? 0);
         $width = $this->template->pxToMm($attrs['width'] ?? 0);
         $height = $this->template->pxToMm($attrs['height'] ?? 0);
+        $textAlign = $attrs['textAlign'] ?? 'left';
 
         if ($x > $this->template->getWidth() || $y > $this->template->getHeight()) {
             return '';
@@ -104,6 +106,8 @@ class Etiqueta
 
         $style[] = "width:{$width}mm";
         $style[] = "height:{$height}mm";
+
+        $style[] = "text-align:{$textAlign}";
 
         if (isset($attrs['fontStyle'])) $style[] = "font-weight:{$attrs['fontStyle']}";
         if (isset($attrs['fontSize'])) $style[] = "font-size:{$this->template->pxToMm($attrs['fontSize'])}mm";
@@ -117,7 +121,7 @@ class Etiqueta
             $style[] = "transform-origin: top left";
         }
 
-        $style[] = "position:absolute;overflow:hidden;white-space:wrap;overflow-wrap:anywhere;text-wrap:wrap;word-break:break-all;font-family:sans-serif;text-align:left;line-height:100%;";
+        $style[] = "position:absolute;overflow:hidden;white-space:wrap;overflow-wrap:anywhere;text-wrap:wrap;word-break:break-all;font-family:sans-serif;line-height:100%;";
 
         return implode(';', $style);
     }
@@ -143,19 +147,33 @@ class Etiqueta
 
         $style = "position:absolute;left:{$x}mm;top:{$y}mm;width:{$widthImg}mm;height:{$heightImg}mm;text-align:center;line-height:{$heightImg}mm;color:#444;{$scaleStyle};";
 
-        if (strtolower($attrs['name']) == Field::BARCODE_LABEL) {
-            $barcodeValue = $this->getBarcodeValue();
+        if ($attrs['name'] == Field::BARCODE_EAN13 || $attrs['name'] == Field::BARCODE_CODE39 ) {
+            $barCodeBase64 = $this->buildBarCodeBase64($attrs['name']);
 
-            if (!$barcodeValue) return '';
-
-            $barcode = (new TypeCode128())->getBarcode($barcodeValue);
-            $renderer = new PngRenderer();
-            return '<img style="'.$style.'" src="data:image/png;base64,' . base64_encode($renderer->render($barcode, $barcode->getWidth() * 2)) . '">';
+            return '<img style="'.$style.'" src="data:image/png;base64,' . $barCodeBase64 . '">';
         }
 
         return "<div style=\"$style\">[barcode]</div>";
     }
 
+    private function buildBarCodeBase64(string $name): string|null
+    {
+        $barcodeValue = $this->getBarcodeValue();
+
+        if (!$barcodeValue) return '';
+
+        match ($name) {
+            Field::BARCODE_EAN13 => $Type = TypeEan13::class,
+            Field::BARCODE_CODE39 => $Type = TypeCode39::class,
+        };
+
+        $barcode = $Type->getBarcode($barcodeValue);
+
+        $renderer = new PngRenderer();
+
+        return base64_encode($renderer->render($barcode, $barcode->getWidth() * 2));
+    }
+    
     private function getBarcodeValue(): string|null
     {
         $barcodeFields = array_values(array_filter($this->fields, function ($field) {
