@@ -3,6 +3,7 @@
 namespace Welin\PhpEtiquetaGenerator;
 
 use Picqer\Barcode\Renderers\PngRenderer;
+use Picqer\Barcode\Renderers\SvgRenderer;
 use Picqer\Barcode\Types\TypeCode39;
 use Picqer\Barcode\Types\TypeEan13;
 use Welin\PhpEtiquetaGenerator\Attributes\Field;
@@ -150,7 +151,7 @@ class Etiqueta
         if ($attrs['name'] == Field::BARCODE_EAN13 || $attrs['name'] == Field::BARCODE_CODE39 ) {
             $barCodeBase64 = $this->buildBarCodeBase64($attrs['name']);
 
-            return '<img style="'.$style.'" src="data:image/png;base64,' . $barCodeBase64 . '">';
+            return '<img style="'.$style.'" src="data:image/svg;base64,' . $barCodeBase64 . '">';
         }
 
         return "<div style=\"$style\">[barcode]</div>";
@@ -163,13 +164,13 @@ class Etiqueta
         if (!$barcodeValue) return '';
 
         match ($name) {
-            Field::BARCODE_EAN13 => $barcodeInstance = new TypeEan13(),
+            Field::BARCODE_EAN13 => $barcodeInstance = new Ean13GeneratorAdapter(),
             Field::BARCODE_CODE39 => $barcodeInstance = new TypeCode39(),
         };
 
         $barcode = $barcodeInstance->getBarcode($barcodeValue);
 
-        $renderer = new PngRenderer();
+        $renderer = new SvgRenderer();
 
         return base64_encode($renderer->render($barcode, $barcode->getWidth() * 2));
     }

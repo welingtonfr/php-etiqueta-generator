@@ -8,10 +8,10 @@ use Welin\PhpEtiquetaGenerator\Attributes\PageMargin;
 use Welin\PhpEtiquetaGenerator\EtiquetasSheet;
 use Welin\PhpEtiquetaGenerator\EtiquetaTemplate;
 
-$template = '{"attrs":{"width":793.700787411,"height":211.6535433096,"className":"stage"},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"name":"barcode","width":120,"x":550.2126151665487,"y":82.12225913621263,"scaleX":1.9003543586109106,"scaleY":1.5342389565645342,"fontSize":20,"draggable":true},"className":"Image"},{"attrs":{"text":"{nome}","x":6.99881880463026,"y":8.013584348468065,"width":535.6385777881951,"height":141.1715023994093,"fontSize":48,"fontStyle":"bold","fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"text":"{preco}","x":4.001574927159595,"y":159.63316678689768,"width":527.5960547548851,"height":48.01358434846837,"fontSize":42,"fontStyle":"bold","fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"text":"{barcode}","x":589.1925348452631,"y":176.2818752307127,"width":154.48856597624118,"height":30.000000000000014,"fontSize":20,"fill":"black","name":"text","draggable":true},"className":"Text"},{"attrs":{"keepRatio":false,"rotateEnabled":false,"x":1.0003937317898703,"y":147.61279026419558},"className":"Transformer"}]}]}';
+$template = '{"attrs":{"width":793.700787411,"height":211.6535433096,"className":"stage"},"className":"Stage","children":[{"attrs":{},"className":"Layer","children":[{"attrs":{"text":"{nome}","height":205.204781046692,"align":"center","fontSize":20,"fill":"black","name":"text","draggable":true,"width":588.7028872755756},"className":"Text"},{"attrs":{"name":"EAN13","width":120,"height":60,"x":595.1487185685031,"y":105.0626767846433,"scaleX":1.5918953915433425,"scaleY":1.6510819005309476,"fontSize":20,"draggable":true},"className":"Image"},{"attrs":{"keepRatio":false,"rotateEnabled":false,"x":-3.001159731769036,"y":-3.004993387065902},"className":"Transformer"}]}]}';
 
 $products = [
-    ['price' => 28.84, 'name' => 'Produto 1 asd makf ndwj ngjdnfj dnjfdngbjf nikjfnbfjgbn fjbnfoj nvjfng jfnjvbf njvb nrjvnfrjng jfnbjfnj vnrjn ', 'barcode' => '100000001'],
+    ['price' => 28.84, 'name' => 'Produto 1 asd makf ndwj ngjdnfj dnjfdngbjf nikjfnbfjgbn fjbnfoj nvjfng jfnjvbf njvb nrjvnfrjng jfnbjfnj vnrjn ', 'barcode' => '34343434343434'],
   ];
 
 
@@ -42,5 +42,5 @@ try {
 
     echo "PDF gerado com sucesso!";
 } catch (Exception $e) {
-    echo "Erro: " . $e->getMessage();
+    echo "Erro: " . $e;
 }
