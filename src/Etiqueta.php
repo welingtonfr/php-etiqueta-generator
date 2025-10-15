@@ -163,11 +163,11 @@ class Etiqueta
         if (!$barcodeValue) return '';
 
         match ($name) {
-            Field::BARCODE_EAN13 => $Type = TypeEan13::class,
-            Field::BARCODE_CODE39 => $Type = TypeCode39::class,
+            Field::BARCODE_EAN13 => $barcodeInstance = new TypeEan13(),
+            Field::BARCODE_CODE39 => $barcodeInstance = new TypeCode39(),
         };
 
-        $barcode = $Type->getBarcode($barcodeValue);
+        $barcode = $barcodeInstance->getBarcode($barcodeValue);
 
         $renderer = new PngRenderer();
 
