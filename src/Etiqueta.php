@@ -46,6 +46,8 @@ class Etiqueta
 
         $html .= '</div>';
 
+        file_put_contents('etiqueta.html', $html);
+
         return $html;
     }
 
@@ -59,6 +61,8 @@ class Etiqueta
     {
         $text = $attrs['text'] ?? '';
         $text = $this->parseTextFields($text);
+
+        echo $text;
 
         $style = $this->getTextStyles($attrs);
 
@@ -88,8 +92,8 @@ class Etiqueta
 
         $x = $this->template->pxToMm($attrs['x'] ?? 0);
         $y = $this->template->pxToMm($attrs['y'] ?? 0);
-        $width = $this->template->pxToMm($attrs['width'] ?? 0);
-        $height = $this->template->pxToMm($attrs['height'] ?? 0);
+        $width = $attrs['width'] ?? 0;
+        $height =$attrs['height'] ?? 0;
         $textAlign = $attrs['align'] ?? 'left';
 
         if ($x > $this->template->getWidth() || $y > $this->template->getHeight()) {
@@ -99,8 +103,8 @@ class Etiqueta
         $style[] = "left:{$x}mm";
         $style[] = "top:{$y}mm";
 
-        $style[] = "width:{$width}mm";
-        $style[] = "height:{$height}mm";
+        $style[] = "width:". $width == 0 ? '100%' : $this->template->pxToMm($width) . 'mm';
+        $style[] = "height:". $height == 0 ? '100%' : $this->template->pxToMm($height) . 'mm';
 
         $style[] = "text-align:{$textAlign}";
 
