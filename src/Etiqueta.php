@@ -118,10 +118,7 @@ class Etiqueta
             $style[] = "transform-origin: top left";
         }
 
-
         $style[] = "position:absolute;overflow:hidden;white-space:wrap;overflow-wrap:anywhere;text-wrap:wrap;word-break:break-all;font-family:sans-serif;line-height:100%;";
-
-        echo  implode(';', $style);
 
         return implode(';', $style);
     }
@@ -165,7 +162,7 @@ class Etiqueta
         if (!$barcodeValue) return '';
 
         match ($name) {
-            Field::BARCODE_EAN13 => $barcodeInstance = new TypeEan13(),
+            Field::BARCODE_EAN13 => $barcodeInstance = new Ean13GeneratorAdapter(),
             Field::BARCODE_CODE39 => $barcodeInstance = new TypeCode39(),
         };
 
