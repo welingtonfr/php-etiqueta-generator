@@ -6,6 +6,7 @@ use Picqer\Barcode\Renderers\PngRenderer;
 use Picqer\Barcode\Renderers\SvgRenderer;
 use Picqer\Barcode\Types\TypeCode39;
 use Picqer\Barcode\Types\TypeEan13;
+use Picqer\Barcode\Types\TypeEan8;
 use Welin\PhpEtiquetaGenerator\Attributes\Field;
 
 class Etiqueta
@@ -99,8 +100,9 @@ class Etiqueta
         $style[] = "left:{$x}mm";
         $style[] = "top:{$y}mm";
 
-        $style[] = "width:". $width == 0 ? '100%' : $this->template->pxToMm($width) . 'mm';
-        $style[] = "height:". $height == 0 ? '100%' : $this->template->pxToMm($height) . 'mm';
+
+        $style[] = "width:". ($width == 0 ? '100%' : "{$this->template->pxToMm($width)}mm");
+        $style[] = "height:". ($height == 0 ? '100%' : "{$this->template->pxToMm($height)}mm");
 
         $style[] = "text-align:{$textAlign}";
 
@@ -116,7 +118,10 @@ class Etiqueta
             $style[] = "transform-origin: top left";
         }
 
+
         $style[] = "position:absolute;overflow:hidden;white-space:wrap;overflow-wrap:anywhere;text-wrap:wrap;word-break:break-all;font-family:sans-serif;line-height:100%;";
+
+        echo  implode(';', $style);
 
         return implode(';', $style);
     }
@@ -160,9 +165,13 @@ class Etiqueta
         if (!$barcodeValue) return '';
 
         match ($name) {
-            Field::BARCODE_EAN13 => $barcodeInstance = new Ean13GeneratorAdapter(),
+            Field::BARCODE_EAN13 => $barcodeInstance = new TypeEan13(),
             Field::BARCODE_CODE39 => $barcodeInstance = new TypeCode39(),
         };
+
+        if (preg_match('/[^0-9]/', $barcodeValue)) {
+            $barcodeInstance = new TypeCode39();
+        }
 
         $barcode = $barcodeInstance->getBarcode($barcodeValue);
 
