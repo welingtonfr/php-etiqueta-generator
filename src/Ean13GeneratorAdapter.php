@@ -12,9 +12,9 @@ class Ean13GeneratorAdapter extends TypeEanUpcBase
 
     protected function calculateChecksumDigit(string $code): int
     {
-        $length = $this->length;
+        $this->length = strlen($code);
 
-        $dataLength = $length - 1;
+        $dataLength = $this->length - 1;
 
         $code = str_pad($code, $dataLength, '0', STR_PAD_LEFT);
 
