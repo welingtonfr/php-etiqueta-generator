@@ -46,8 +46,6 @@ class Etiqueta
 
         $html .= '</div>';
 
-        file_put_contents('etiqueta.html', $html);
-
         return $html;
     }
 
@@ -61,8 +59,6 @@ class Etiqueta
     {
         $text = $attrs['text'] ?? '';
         $text = $this->parseTextFields($text);
-
-        echo $text;
 
         $style = $this->getTextStyles($attrs);
 
